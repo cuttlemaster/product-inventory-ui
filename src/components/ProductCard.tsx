@@ -1,5 +1,7 @@
 'use client'
 import { useState } from 'react';
+import { getStockStatus } from '@/lib/stockStatus'
+
 
 import Image from 'next/image'
 import { Button } from '@/components/ui/Button'
@@ -12,24 +14,25 @@ interface ProductCardProps {
 // BUG: This component has several accessibility and performance issues
 export function ProductCard({ product }: ProductCardProps) {
   const isOutOfStock = product.stock <= 0
+  const stockStatus = getStockStatus(product)
 
   // BUG: Price formatting is incorrect - doesn't handle edge cases
   const formatPrice = (price: number) => {
     return `$${price.toFixed(2)}`
   }
 
-  // BUG: Stock status logic has issues
-  const getStockStatus = () => {
-    if (product.stock === 0) return 'Out of Stock'
-    if (product.stock <= 5) return 'Low Stock'
-    return 'In Stock'
+  // seems to make sense to use the same terminology and logic from our new getStockStatus util
+  // to also do the logic for the color of the stock text label
+  const getStockColor = (status: 'Out of Stock' | 'Low Stock' | 'In Stock') => {
+  switch (status) {
+    case 'Out of Stock':
+      return 'text-error-600'
+    case 'Low Stock':
+      return 'text-warning-600'
+    default:
+      return 'text-success-600'
   }
-
-  const getStockColor = () => {
-    if (product.stock === 0) return 'text-error-600'
-    if (product.stock <= 5) return 'text-warning-600'
-    return 'text-success-600'
-  }
+}
 
   // PERFORMANCE ISSUE: This calculation runs on every render
   // const discountedPrice = Math.random() > 0.7 ? product.price * 0.9 : null
@@ -70,8 +73,8 @@ export function ProductCard({ product }: ProductCardProps) {
             {product.name}
           </h3>
           {/* BUG: Stock badge is not screen reader friendly */}
-          <span className={`text-xs px-2 py-1 rounded ${getStockColor()}`}>
-            {getStockStatus()}
+          <span className={`text-xs px-2 py-1 rounded ${getStockColor(stockStatus)}`}>
+            {stockStatus}
           </span>
         </div>
 
