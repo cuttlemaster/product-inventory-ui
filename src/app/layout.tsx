@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import './globals.css'
+import Link from 'next/link'
 
 export const metadata: Metadata = {
   title: 'Product Inventory Tracker',
@@ -24,12 +25,12 @@ export default function RootLayout({
                   </h1>
                 </div>
                 <div className="flex items-center space-x-4">
-                  <button className="text-gray-500 hover:text-gray-700">
+                  <Link href="/dashboard" className="text-gray-500 hover:text-gray-700">
                     Dashboard
-                  </button>
-                  <button className="text-gray-500 hover:text-gray-700">
+                  </Link>
+                  <Link href="/products" className="text-gray-500 hover:text-gray-700">
                     Products
-                  </button>
+                  </Link>
                 </div>
               </div>
             </div>
