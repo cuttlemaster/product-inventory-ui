@@ -58,7 +58,6 @@ export function ProductFilters({ filters, onFiltersChange }: ProductFiltersProps
     })
   }
 
-  // BUG: Reset function doesn't properly clear all filters
   const handleReset = () => {
     onFiltersChange({
       category: '',

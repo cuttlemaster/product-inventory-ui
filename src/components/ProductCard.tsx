@@ -49,7 +49,7 @@ export function ProductCard({ product }: ProductCardProps) {
         {product.imageUrl ? (
           <Image
             src={product.imageUrl}
-            alt={product.name} // BUG: Alt text should be more descriptive
+            alt={product.description}
             fill
             className="object-cover"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
