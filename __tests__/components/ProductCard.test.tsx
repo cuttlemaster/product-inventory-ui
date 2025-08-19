@@ -24,7 +24,7 @@ const outOfStockProduct: Product = {
 describe('ProductCard', () => {
   it('renders product information correctly', () => {
     render(<ProductCard product={mockProduct} />)
-    
+
     expect(screen.getByText('Test Product')).toBeInTheDocument()
     expect(screen.getByText('This is a test product description')).toBeInTheDocument()
     expect(screen.getByText('Electronics')).toBeInTheDocument()
@@ -40,43 +40,46 @@ describe('ProductCard', () => {
 
   it('shows out of stock status and disables button', () => {
     render(<ProductCard product={outOfStockProduct} />)
-    
-    expect(screen.getByText('Out of Stock')).toBeInTheDocument()
-    
+
+    // expect(screen.getByText('Out of Stock')).toBeInTheDocument()
+    // I think there's an issue here where this line was not specific enough originally
+    // and was checking for 'Out of Stock' anywhere and not for the specific span element:
+    expect(screen.getByText('Out of Stock', { selector: 'span' })).toBeInTheDocument()
+
     const addToCartButton = screen.getByRole('button', { name: /out of stock/i })
     expect(addToCartButton).toBeDisabled()
   })
 
   it('handles add to cart click', () => {
     const consoleSpy = jest.spyOn(console, 'log').mockImplementation()
-    
+
     render(<ProductCard product={mockProduct} />)
-    
+
     const addToCartButton = screen.getByRole('button', { name: /add to cart/i })
     fireEvent.click(addToCartButton)
-    
+
     expect(consoleSpy).toHaveBeenCalledWith('Add to cart:', '1')
-    
+
     consoleSpy.mockRestore()
   })
 
   it('handles details button click', () => {
     const consoleSpy = jest.spyOn(console, 'log').mockImplementation()
-    
+
     render(<ProductCard product={mockProduct} />)
-    
+
     const detailsButton = screen.getByRole('button', { name: /details/i })
     fireEvent.click(detailsButton)
-    
+
     expect(consoleSpy).toHaveBeenCalledWith('View details:', '1')
-    
+
     consoleSpy.mockRestore()
   })
 
   it('shows low stock warning for products with stock <= 5', () => {
     const lowStockProduct = { ...mockProduct, stock: 3 }
     render(<ProductCard product={lowStockProduct} />)
-    
+
     expect(screen.getByText('Low Stock')).toBeInTheDocument()
   })
 })
