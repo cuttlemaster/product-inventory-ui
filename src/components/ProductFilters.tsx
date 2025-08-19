@@ -10,7 +10,7 @@ interface ProductFiltersProps {
 
 const categories: ProductCategory[] = [
   'Electronics',
-  'Clothing', 
+  'Clothing',
   'Books',
   'Home & Garden',
   'Sports',
@@ -21,7 +21,7 @@ const categories: ProductCategory[] = [
 
 // BUG: This component has performance and UX issues
 export function ProductFilters({ filters, onFiltersChange }: ProductFiltersProps) {
-  
+
   // BUG: These handlers recreate functions on every render
   const handleCategoryChange = (e: ChangeEvent<HTMLSelectElement>) => {
     onFiltersChange({
@@ -29,7 +29,7 @@ export function ProductFilters({ filters, onFiltersChange }: ProductFiltersProps
       category: e.target.value
     })
   }
-  
+
   const handleMinPriceChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
     onFiltersChange({
@@ -37,7 +37,7 @@ export function ProductFilters({ filters, onFiltersChange }: ProductFiltersProps
       minPrice: value ? parseFloat(value) : undefined
     })
   }
-  
+
   const handleMaxPriceChange = (e: ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
     onFiltersChange({
@@ -45,29 +45,29 @@ export function ProductFilters({ filters, onFiltersChange }: ProductFiltersProps
       maxPrice: value ? parseFloat(value) : undefined
     })
   }
-  
+
   const handleStockChange = (e: ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value
     let inStock: boolean | undefined = undefined
     if (value === 'true') inStock = true
     if (value === 'false') inStock = false
-    
+
     onFiltersChange({
       ...filters,
       inStock
     })
   }
-  
+
   // BUG: Reset function doesn't properly clear all filters
   const handleReset = () => {
     onFiltersChange({
       category: '',
       minPrice: undefined,
       maxPrice: undefined,
-      inStock: true, // BUG: Should be undefined
+      inStock: undefined,
     })
   }
-  
+
   return (
     <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
       <div className="flex flex-col lg:flex-row lg:items-end lg:space-x-4 space-y-4 lg:space-y-0">
@@ -89,7 +89,7 @@ export function ProductFilters({ filters, onFiltersChange }: ProductFiltersProps
             ))}
           </select>
         </div>
-        
+
         <div className="flex-1">
           <label htmlFor="min-price" className="block text-sm font-medium text-gray-700 mb-1">
             Min Price
@@ -105,7 +105,7 @@ export function ProductFilters({ filters, onFiltersChange }: ProductFiltersProps
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
           />
         </div>
-        
+
         <div className="flex-1">
           <label htmlFor="max-price" className="block text-sm font-medium text-gray-700 mb-1">
             Max Price
@@ -121,7 +121,7 @@ export function ProductFilters({ filters, onFiltersChange }: ProductFiltersProps
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
           />
         </div>
-        
+
         <div className="flex-1">
           <label htmlFor="stock-filter" className="block text-sm font-medium text-gray-700 mb-1">
             Availability
@@ -137,7 +137,7 @@ export function ProductFilters({ filters, onFiltersChange }: ProductFiltersProps
             <option value="false">Out of Stock Only</option>
           </select>
         </div>
-        
+
         <div className="flex-shrink-0">
           {/* BUG: Button lacks proper accessibility attributes */}
           <button
@@ -149,7 +149,7 @@ export function ProductFilters({ filters, onFiltersChange }: ProductFiltersProps
           </button>
         </div>
       </div>
-      
+
       {/* BUG: This summary text updates too frequently and causes unnecessary re-renders */}
       <div className="mt-3 text-xs text-gray-500">
         {filters.category && `Category: ${filters.category}`}
