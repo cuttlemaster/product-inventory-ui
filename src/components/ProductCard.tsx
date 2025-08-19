@@ -33,7 +33,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
   // PERFORMANCE ISSUE: This calculation runs on every render
   // const discountedPrice = Math.random() > 0.7 ? product.price * 0.9 : null
-  // added useState to have the formula run and fill the variable only on the initial render
+  // added useState to have the formula run and fill the variable only on the initial mount
   // because there wasn't anything preventing it from firing every single time and once it is
   // calculated the first time it makes sense it's not going to change just because filters are
   // used by the user to view products
