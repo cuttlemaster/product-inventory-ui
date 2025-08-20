@@ -1,4 +1,7 @@
 'use client'
+import { useState } from 'react';
+import { getStockStatus } from '@/lib/stockStatus'
+
 
 import Image from 'next/image'
 import { Button } from '@/components/ui/Button'
@@ -11,28 +14,34 @@ interface ProductCardProps {
 // BUG: This component has several accessibility and performance issues
 export function ProductCard({ product }: ProductCardProps) {
   const isOutOfStock = product.stock <= 0
-  
+  const stockStatus = getStockStatus(product)
+
   // BUG: Price formatting is incorrect - doesn't handle edge cases
   const formatPrice = (price: number) => {
     return `$${price.toFixed(2)}`
   }
-  
-  // BUG: Stock status logic has issues
-  const getStockStatus = () => {
-    if (product.stock === 0) return 'Out of Stock'
-    if (product.stock <= 5) return 'Low Stock' 
-    return 'In Stock'
+
+  // seems to make sense to use the same terminology and logic from our new getStockStatus util
+  // to also do the logic for the color of the stock text label
+  const getStockColor = (status: 'Out of Stock' | 'Low Stock' | 'In Stock') => {
+  switch (status) {
+    case 'Out of Stock':
+      return 'text-error-600'
+    case 'Low Stock':
+      return 'text-warning-600'
+    default:
+      return 'text-success-600'
   }
-  
-  const getStockColor = () => {
-    if (product.stock === 0) return 'text-error-600'
-    if (product.stock <= 5) return 'text-warning-600'
-    return 'text-success-600'
-  }
-  
+}
+
   // PERFORMANCE ISSUE: This calculation runs on every render
-  const discountedPrice = Math.random() > 0.7 ? product.price * 0.9 : null
-  
+  // const discountedPrice = Math.random() > 0.7 ? product.price * 0.9 : null
+  // added useState to have the formula run and fill the variable only on the initial mount
+  // because there wasn't anything preventing it from firing every single time and once it is
+  // calculated the first time it makes sense it's not going to change just because filters are
+  // used by the user to view products
+  const [discountedPrice] = useState<number | null>(() => Math.random() > 0.7 ? product.price * 0.9 : null);
+
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 hover:shadow-lg transition-shadow">
       {/* BUG: Image component is not optimized properly */}
@@ -40,7 +49,7 @@ export function ProductCard({ product }: ProductCardProps) {
         {product.imageUrl ? (
           <Image
             src={product.imageUrl}
-            alt={product.name} // BUG: Alt text should be more descriptive
+            alt={product.description}
             fill
             className="object-cover"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -57,22 +66,22 @@ export function ProductCard({ product }: ProductCardProps) {
           </div>
         )}
       </div>
-      
+
       <div className="p-4">
         <div className="flex justify-between items-start mb-2">
           <h3 className="text-lg font-semibold text-gray-900 truncate">
             {product.name}
           </h3>
           {/* BUG: Stock badge is not screen reader friendly */}
-          <span className={`text-xs px-2 py-1 rounded ${getStockColor()}`}>
-            {getStockStatus()}
+          <span className={`text-xs px-2 py-1 rounded ${getStockColor(stockStatus)}`}>
+            {stockStatus}
           </span>
         </div>
-        
+
         <p className="text-gray-600 text-sm mb-3 line-clamp-2">
           {product.description}
         </p>
-        
+
         <div className="flex justify-between items-center mb-3">
           <div className="flex flex-col">
             <span className="text-sm text-gray-500">Category</span>
@@ -83,7 +92,7 @@ export function ProductCard({ product }: ProductCardProps) {
             <span className="text-sm font-medium">{product.stock}</span>
           </div>
         </div>
-        
+
         <div className="flex justify-between items-center mb-4">
           <div className="flex items-baseline">
             {discountedPrice ? (
@@ -105,11 +114,11 @@ export function ProductCard({ product }: ProductCardProps) {
             SKU: {product.sku}
           </span>
         </div>
-        
+
         <div className="flex space-x-2">
-          <Button 
-            size="sm" 
-            variant="primary" 
+          <Button
+            size="sm"
+            variant="primary"
             className="flex-1"
             disabled={isOutOfStock}
             onClick={() => {
@@ -119,8 +128,8 @@ export function ProductCard({ product }: ProductCardProps) {
           >
             {isOutOfStock ? 'Out of Stock' : 'Add to Cart'}
           </Button>
-          <Button 
-            size="sm" 
+          <Button
+            size="sm"
             variant="outline"
             onClick={() => {
               // TODO: Implement product details view
